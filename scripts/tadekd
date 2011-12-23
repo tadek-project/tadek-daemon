@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+################################################################################
+##                                                                            ##
+## This file is a part of TADEK.                                              ##
+##                                                                            ##
+## TADEK - Test Automation in a Distributed Environment                       ##
+## (http://tadek.comarch.com)                                                 ##
+##                                                                            ##
+## Copyright (C) 2011 Comarch S.A.                                            ##
+## All rights reserved.                                                       ##
+##                                                                            ##
+## TADEK is free software for non-commercial purposes. For commercial ones    ##
+## we offer a commercial license. Please check http://tadek.comarch.com for   ##
+## details or write to tadek-licenses@comarch.com                             ##
+##                                                                            ##
+## You can redistribute it and/or modify it under the terms of the            ##
+## GNU General Public License as published by the Free Software Foundation,   ##
+## either version 3 of the License, or (at your option) any later version.    ##
+##                                                                            ##
+## TADEK is distributed in the hope that it will be useful,                   ##
+## but WITHOUT ANY WARRANTY; without even the implied warranty of             ##
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              ##
+## GNU General Public License for more details.                               ##
+##                                                                            ##
+## You should have received a copy of the GNU General Public License          ##
+## along with TADEK bundled with this file in the file LICENSE.               ##
+## If not, see http://www.gnu.org/licenses/.                                  ##
+##                                                                            ##
+## Please notice that Contributor Agreement applies to any contribution       ##
+## you make to TADEK. The Agreement must be completed, signed and sent        ##
+## to Comarch before any contribution is made. You should have received       ##
+## a copy of Contribution Agreement along with TADEK bundled with this file   ##
+## in the file CONTRIBUTION_AGREEMENT.pdf or see http://tadek.comarch.com     ##
+## or write to tadek-licenses@comarch.com                                     ##
+##                                                                            ##
+################################################################################
+
+import os
+import sys
+import optparse
+
+from tadek.core import config
+
+config.setProgramName("tadekd")
+sys.path.insert(0, os.path.join(config.DATA_DIR, "daemon"))
+
+from tadek.core import log
+import daemon
+
+USAGE = '''%prog [OPTION]...'''
+
+DESC = '''tadekd is a daemon program that offers services for client-like TADEK
+tools: tadek, tadek-explorer and tadek-ui. The tadekd daemon is intended for
+executing operations requested by clients in a host system. The IP address and
+TCP port on which tadekd will listen for client requests can be specified in the
+configuration file (default or provided one). The default location is
+.tadek/config/tadekd/daemon.conf in the home directory. If configuration does not contain
+required data then tadekd will use the %(ip)s IP address and %(port)d TCP port.
+''' % {"ip": daemon.DEFAULT_IP, "port": daemon.DEFAULT_PORT}
+
+if __name__ == "__main__":
+    parser = optparse.OptionParser(prog="tadekd", usage=USAGE, description=DESC,
+                      version=config.VERSION_STRING)
+    parser.add_option("-c", "--config", dest="config", metavar="FILE",
+                      help="custom configuration file")
+    parser.add_option("--no-startup", dest="startup", action="store_false",
+                      help="do not run start-up scripts")
+    parser.set_defaults(startup=True)
+    opts, args = parser.parse_args()
+    try:
+        daemon.main(conf=opts.config, startup=opts.startup)
+    except KeyboardInterrupt:
+        print >> sys.stderr, "\nDaemon stopped"
+    except Exception:
+        log.exception("Starting daemon failure")
+
