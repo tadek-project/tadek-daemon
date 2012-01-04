@@ -40,6 +40,7 @@ import os
 import sys
 from glob import glob
 from distutils.core import setup
+from distutils.command.install import install as _install
 try:
     from tadek.core.config import CONF_DIR, DATA_DIR, VERSION
 except ImportError:
@@ -55,6 +56,14 @@ DATA_FILES = [
         glob(os.path.join("src", "accessibility", "*.py"))),
 ]
 
+class install(_install):
+    sub_commands = []
+    # Skip the install_egg_info sub-command
+    for name, method in _install.sub_commands:
+        if name != "install_egg_info":
+            sub_commands.append((name, method))
+    del name, method
+
 setup(
     name="tadek-daemon",
     version=VERSION,
@@ -64,6 +73,7 @@ setup(
     author_email="tadek@comarch.com",
     license="http://tadek.comarch.com/licensing",
     url="http://tadek.comarch.com/",
+    cmdclass={"install": install},
     scripts=["scripts/tadekd"],
     data_files=DATA_FILES,
 )
