@@ -1,0 +1,10 @@
+include AUTHORS
+include CONTRIBUTION_AGREEMENT.pdf
+include LICENSE
+include README
+
+graft data
+graft scripts
+
+recursive-include src *.py
+
