@@ -7,7 +7,7 @@
 ## TADEK - Test Automation in a Distributed Environment                       ##
 ## (http://tadek.comarch.com)                                                 ##
 ##                                                                            ##
-## Copyright (C) 2011 Comarch S.A.                                            ##
+## Copyright (C) 2011,2012 Comarch S.A.                                       ##
 ## All rights reserved.                                                       ##
 ##                                                                            ##
 ## TADEK is free software for non-commercial purposes. For commercial ones    ##
@@ -37,18 +37,18 @@
 ################################################################################
 
 import os
+import sys
 from glob import glob
 from distutils.core import setup
 try:
     from tadek.core.config import CONF_DIR, DATA_DIR, VERSION
 except ImportError:
-    print "Required tadek-common package is not installed"
+    print >> sys.stderr, "Required tadek-common package is not installed"
     exit(1)
-
 
 DATA_FILES = [
     (os.path.join(CONF_DIR, "tadekd"),
-        glob(os.path.join("data", "config", "tadekd", "*"))),
+        glob(os.path.join("data", "config", "tadekd", '*'))),
     (os.path.join(DATA_DIR, "daemon"),
         glob(os.path.join("src", "*.py"))),
     (os.path.join(DATA_DIR, "daemon", "accessibility"),
@@ -58,6 +58,13 @@ DATA_FILES = [
 setup(
     name="tadek-daemon",
     version=VERSION,
+    description="A lightweight program that offers services for TADEK clients",
+    long_description=''.join(['\n', open("README").read()]),
+    author="Comarch TADEK Team",
+    author_email="tadek@comarch.com",
+    license="http://tadek.comarch.com/licensing",
+    url="http://tadek.comarch.com/",
     scripts=["scripts/tadekd"],
     data_files=DATA_FILES,
 )
+
