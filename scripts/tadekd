@@ -41,16 +41,17 @@ import sys
 import optparse
 
 from tadek.core import config
-
 config.setProgramName("tadekd")
-sys.path.insert(0, os.path.join(config.DATA_DIR, "daemon"))
 
 from tadek.core import log
+
+sys.path.insert(0, os.path.join(config.DATA_DIR, "daemon"))
+
 import daemon
 
 USAGE = '''%prog [OPTION]...'''
 
-DESC = '''tadekd is a daemon program that offers services for client-like TADEK
+DESC = '''%%prog is a daemon program that offers services for client-like TADEK
 tools: tadek, tadek-explorer and tadek-ui. The tadekd daemon is intended for
 executing operations requested by clients in a host system. The IP address and
 TCP port on which tadekd will listen for client requests can be specified in the
@@ -60,8 +61,9 @@ required data then tadekd will use the %(ip)s IP address and %(port)d TCP port.
 ''' % {"ip": daemon.DEFAULT_IP, "port": daemon.DEFAULT_PORT}
 
 if __name__ == "__main__":
-    parser = optparse.OptionParser(prog="tadekd", usage=USAGE, description=DESC,
-                      version=config.VERSION_STRING)
+    parser = optparse.OptionParser(prog=config.getProgramName(),
+                                   usage=USAGE, description=DESC,
+                                   version=config.getProgramVersion())
     parser.add_option("-c", "--config", dest="config", metavar="FILE",
                       help="custom configuration file")
     parser.add_option("--no-startup", dest="startup", action="store_false",
